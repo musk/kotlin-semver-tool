@@ -4,7 +4,6 @@ plugins {
     kotlin("jvm") version "1.5.10"
     `maven-publish`
     `java-library`
-    application
 }
 
 group = "com.github.musk.semver"

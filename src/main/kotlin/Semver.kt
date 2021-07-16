@@ -9,13 +9,14 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     Comparable<Semver> {
 
     companion object {
-        const val NAT = "0|[1-9][0-9]*"
-        const val ALPHANUM = "[0-9]*[A-Za-z-][0-9A-Za-z-]*"
-        const val IDENT = "$NAT|$ALPHANUM"
-        const val FIELD = "[0-9A-Za-z-]+"
-        const val PREREL_REGEX = "((?:${IDENT})(?:\\.(?:${IDENT}))*)"
-        const val BUILD_REGEX = "(${FIELD}(?:\\.${FIELD})*)"
-        const val SEMVER_REGEX = "^[vV]?(${NAT})\\.(${NAT})\\.(${NAT})(?:-${PREREL_REGEX})?(?:\\+${BUILD_REGEX})?$"
+        private const val NAT = "0|[1-9][0-9]*"
+        private const val ALPHANUM = "[0-9]*[A-Za-z-][0-9A-Za-z-]*"
+        private const val IDENT = "$NAT|$ALPHANUM"
+        private const val FIELD = "[0-9A-Za-z-]+"
+        private const val PREREL_REGEX = "((?:${IDENT})(?:\\.(?:${IDENT}))*)"
+        private const val BUILD_REGEX = "(${FIELD}(?:\\.${FIELD})*)"
+        private const val SEMVER_REGEX =
+            "^[vV]?(${NAT})\\.(${NAT})\\.(${NAT})(?:-${PREREL_REGEX})?(?:\\+${BUILD_REGEX})?$"
 
         private fun match(version: String): MatchResult? = Regex(SEMVER_REGEX).find(version)
 
@@ -23,12 +24,38 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
 
         fun parse(version: String): Semver {
             val matches = match(version)
-            matches ?: throw IllegalArgumentException("Invalid semantic version '$version'")
+            requireNotNull(matches) { "Invalid semantic version '$version'" }
             val (majorStr, minorStr, patchStr, prerelStr, buildStr) = matches.destructured
             return Semver(majorStr.toInt(), minorStr.toInt(), patchStr.toInt(), prerelStr, buildStr)
         }
 
         fun copy(semver: Semver): Semver = Semver(semver.major, semver.minor, semver.patch, semver.prerel, semver.build)
+
+        fun comparePrerel(leftPrerel: String, rightPrerel: String): Int {
+            if (leftPrerel.isEmpty()) return 1
+            if (rightPrerel.isEmpty()) return -1
+
+            // Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined
+            // by comparing each dot separated identifier from left to right until a difference is found as follows:
+            val lIdentifiers = leftPrerel.split('.')
+            val rIdentifiers = rightPrerel.split('.')
+
+            val pairs = lIdentifiers.zip(rIdentifiers)
+            for ((left, right) in pairs) {
+                if (left != right) {
+                    try {
+                        // identifiers consisting of only digits are compared numerically and
+                        val l = left.toInt()
+                        val r = right.toInt()
+                        return l.compareTo(r)
+                    } catch (ex: NumberFormatException) {
+                        // identifiers with letters or hyphens are compared lexically in ASCII sort order.
+                        return left.compareTo(right)
+                    }
+                }
+            }
+            return lIdentifiers.size.compareTo(rIdentifiers.size)
+        }
     }
 
     fun clone(): Semver = copy(this)
@@ -62,8 +89,8 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
 
     override fun toString(): String {
         return "$major.$minor.$patch" +
-                (if (!prerel.isEmpty()) "-$prerel" else "") +
-                (if (!build.isEmpty()) "+$build" else "")
+                (if (prerel.isNotEmpty()) "-$prerel" else "") +
+                (if (build.isNotEmpty()) "+$build" else "")
     }
 
     override fun equals(other: Any?): Boolean {
@@ -104,31 +131,5 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
         }
         // build numbers are ignored in precedence
         return 0
-    }
-
-    private fun comparePrerel(leftPrerel: String, rightPrerel: String): Int {
-        if(leftPrerel.isEmpty()) return 1
-        if(rightPrerel.isEmpty()) return -1
-
-        // Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined
-        // by comparing each dot separated identifier from left to right until a difference is found as follows:
-        val lIdentifiers = leftPrerel.split('.')
-        val rIdentifiers = rightPrerel.split('.')
-
-        val pairs = lIdentifiers.zip(rIdentifiers)
-        for ((left, right) in pairs) {
-            if (left != right) {
-                try {
-                    // identifiers consisting of only digits are compared numerically and
-                    val l = left.toInt()
-                    val r = right.toInt()
-                    return l.compareTo(r)
-                } catch (ex: NumberFormatException) {
-                    // identifiers with letters or hyphens are compared lexically in ASCII sort order.
-                    return left.compareTo(right)
-                }
-            }
-        }
-        return lIdentifiers.size.compareTo(rIdentifiers.size)
     }
 }
