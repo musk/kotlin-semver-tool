@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.20"
     `maven-publish`
     `java-library`
 }
@@ -69,3 +69,4 @@ java {
     withSourcesJar()
     withJavadocJar()
 }
+
