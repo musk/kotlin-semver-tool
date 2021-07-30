@@ -25,3 +25,12 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Assemble Distribution
+      run: ./gradlew assembleDist
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        # A file, directory or wildcard pattern that describes what to upload
+        path: build/libs/kotlin-semver-tool*.jar
+        if-no-files-found: error
+        retention-days: 1
