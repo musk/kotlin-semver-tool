@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.musk.semver"
-version = "1.0.0-SNAPSHOT"
+version = project.property("projectVersion") ?: "0.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -59,9 +59,12 @@ tasks.withType<KotlinCompile>() {
 
 tasks.jar {
     manifest {
-        attributes(mapOf("Implementation-Title" to project.name,
+        attributes(mapOf(
+            "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
-            "Built-By" to System.getProperty("user.name")))
+            "Built-By" to System.getProperty("user.name"),
+            "Multi-Release" to true,
+        ))
     }
 }
 
@@ -70,3 +73,7 @@ java {
     withJavadocJar()
 }
 
+distributions {
+
+
+}
