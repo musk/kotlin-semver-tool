@@ -130,9 +130,9 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
             return patch.compareTo(other.patch)
         else if (prerel != other.prerel) {
             return comparePrerel(prerel, other.prerel)
-        } else if (build.isEmpty() && !other.build.isEmpty()) {
+        } else if (build.isEmpty() && other.build.isNotEmpty()) {
             return 1
-        } else if (!build.isEmpty() && other.build.isEmpty()) {
+        } else if (build.isNotEmpty() && other.build.isEmpty()) {
             return -1
         }
         // build numbers are ignored in precedence
