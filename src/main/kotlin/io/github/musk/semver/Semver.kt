@@ -16,6 +16,16 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
 
         private fun match(version: String): MatchResult? = Regex(SEMVER_REGEX).find(version)
 
+        fun String.toSemver(): Semver = parse(this)
+        fun String.isSemver(): Boolean = validate(this)
+        fun String.ifSemver(block: (Semver) -> Unit): Semver? {
+            return if (validate(this)) {
+                val semver = parse(this)
+                block(semver)
+                semver
+            } else null
+        }
+
         fun validate(version: String): Boolean = match(version) != null
 
         fun parse(version: String): Semver {

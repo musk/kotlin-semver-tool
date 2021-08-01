@@ -1,5 +1,8 @@
 package io.github.musk.semver
 
+import io.github.musk.semver.Semver.Companion.ifSemver
+import io.github.musk.semver.Semver.Companion.isSemver
+import io.github.musk.semver.Semver.Companion.toSemver
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -47,7 +50,7 @@ internal class SemverTest {
     )
     fun `Test that prerel() throws IllegalArgumentException for illegal characters in prerel string`(
         version: String,
-        prerel: String
+        prerel: String,
     ) {
         // given
         val semver = Semver.parse(version)
@@ -65,7 +68,7 @@ internal class SemverTest {
         version: String,
         build: String,
         result: String,
-        details: String
+        details: String,
     ) {
         val semver = Semver.parse(version).build(build)
         assertEquals(result, semver.toString(), details)
@@ -86,7 +89,7 @@ internal class SemverTest {
     fun `Test that build() fails with IllegalArgumentException for illegal characters in build number`(
         version: String,
         build: String,
-        details: String
+        details: String,
     ) {
         val semver = Semver.parse(version)
         assertFailsWith<java.lang.IllegalArgumentException>(details) { semver.build(build) }
@@ -319,5 +322,52 @@ internal class SemverTest {
     fun `Test toString`() {
         val v1 = Semver(1, 2, 3, "rc1", "abc")
         assertEquals("1.2.3-rc1+abc", v1.toString())
+    }
+
+    @Test
+    fun `convert String to Semver`() {
+        assertEquals(Semver(1, 2, 3, "BETA", "1234"), "1.2.3-BETA+1234".toSemver())
+    }
+
+    @Test
+    fun `convert to String throws IllegalArgumentException on invalid semantic version`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            "1.2.3.4".toSemver()
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1.2.3,         true",
+        "1.2.3.4,       false",
+        "1.2,           false",
+        "1.2.3-TEST,    true",
+        "1.2.3-TEST+12, true",
+        "1.2.3-T.T+12,  true",
+    )
+    fun `validates String correct`(version: String, expected: String) {
+        assertEquals(expected.toBoolean(), version.isSemver())
+    }
+
+    @Test
+    fun `block is executed when String is a valid semantic version`() {
+        val version = "1.2.3-BETA+123"
+        val expected = Semver.parse(version)
+        val result = version.ifSemver {
+            assertEquals(1, it.major)
+            assertEquals(2, it.minor)
+            assertEquals(3, it.patch)
+            assertEquals("BETA", it.prerel)
+            assertEquals("123", it.build)
+        }
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `block is not executed when String does not contain a semantic version`() {
+        val result = "1.23.4.2".ifSemver {
+            fail("Block was executed even though '1.23.4.2'  is not a semantic version!")
+        }
+        assertNull(result)
     }
 }
