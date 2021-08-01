@@ -18,12 +18,10 @@ A  version must match the following regular expression:
 ```
 
 In English:
-- The version must match _X.Y.Z[-PRERELEASE][+BUILD]_ where _X_, _Y_ and _Z_ are non-negative integers.
-- _PRERELEASE_ is a dot separated sequence of non-negative integers and/or identifiers composed of alphanumeric
-  characters and hyphens (with at least one non-digit). Numeric identifiers must not have leading zeros. A hyphen
-  (\"-\") introduces this optional part.
-- _BUILD_ is a dot separated sequence of identifiers composed of alphanumeric characters and hyphens. A plus ("+")
-  introduces this optional part.
+
+The version must match `X.Y.Z[-PRERELEASE][+BUILD]` where `X`, `Y` and `Z` are non-negative integers. 
+`-PRERELEASE` is a dot separated sequence of non-negative integers and/or identifiers composed of alphanumeric characters and hyphens (with at least one non-digit). Numeric identifiers must not have leading zeros. A hyphen (\"-\") introduces this optional part.
+`-BUILD` is a dot separated sequence of identifiers composed of alphanumeric characters and hyphens. A plus ("+") introduces this optional part.
 
 ## Build
 ```

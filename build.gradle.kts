@@ -4,18 +4,26 @@ plugins {
     kotlin("jvm") version "1.5.20"
     `maven-publish`
     `java-library`
+    signing
 }
 
-group = "com.github.musk.semver"
+group = "io.github.musk.semver"
 version = project.property("projectVersion") ?: "0.0.0-SNAPSHOT"
+project.extra["signRelease"] = (project.property("signRelease") as String?)?.toBoolean() ?: false
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation(kotlin("test"))
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 publishing {
@@ -25,6 +33,7 @@ publishing {
                 name.set("Kotlin Semver Library")
                 description.set("""Toolset to handle semantic versioning according to "Semver Specification 2.0"(https://semver.org/spec/v2.0.0.html)""")
                 url.set("https://github.com/musk/kotlin-semver-tool")
+                packaging="jar"
                 licenses {
                     license {
                         name.set("The MIT License")
@@ -36,6 +45,7 @@ publishing {
                         id.set("musk")
                         name.set("Stefan Langer")
                         email.set("mailtolanger@gmail.com")
+                        organizationUrl.set("http://github.com/musk")
                     }
                 }
                 scm {
@@ -47,6 +57,14 @@ publishing {
             from(components["java"])
         }
     }
+}
+
+signing {
+    sign(publishing.publications["kotlin-semver-library"])
+}
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { project.extra["signRelease"] as Boolean }
 }
 
 tasks.test {
@@ -68,12 +86,3 @@ tasks.jar {
     }
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-distributions {
-
-
-}

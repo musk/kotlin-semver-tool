@@ -1,9 +1,5 @@
-package com.github.musk.semver
+package io.github.musk.semver
 
-
-enum class Bump {
-    MAJOR, MINOR, PATCH, RELEASE
-}
 
 class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String = "", val build: String = "") :
     Comparable<Semver> {
@@ -13,10 +9,10 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
         private const val ALPHANUM = "[0-9]*[A-Za-z-][0-9A-Za-z-]*"
         private const val IDENT = "$NAT|$ALPHANUM"
         private const val FIELD = "[0-9A-Za-z-]+"
-        private const val PREREL_REGEX = "((?:${IDENT})(?:\\.(?:${IDENT}))*)"
-        private const val BUILD_REGEX = "(${FIELD}(?:\\.${FIELD})*)"
+        private const val PREREL_REGEX = "((?:$IDENT)(?:\\.(?:$IDENT))*)"
+        private const val BUILD_REGEX = "($FIELD(?:\\.$FIELD)*)"
         private const val SEMVER_REGEX =
-            "^[vV]?(${NAT})\\.(${NAT})\\.(${NAT})(?:-${PREREL_REGEX})?(?:\\+${BUILD_REGEX})?$"
+            "^[vV]?($NAT)\\.($NAT)\\.($NAT)(?:-$PREREL_REGEX)?(?:\\+$BUILD_REGEX)?$"
 
         private fun match(version: String): MatchResult? = Regex(SEMVER_REGEX).find(version)
 
