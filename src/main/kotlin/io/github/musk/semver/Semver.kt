@@ -18,7 +18,7 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
 
         fun String.toSemver(): Semver = parse(this)
         fun String.isSemver(): Boolean = validate(this)
-        fun String.ifSemver(block: (Semver) -> Unit): Semver? {
+        inline fun String.ifSemver(block: (Semver) -> Unit): Semver? {
             return if (validate(this)) {
                 val semver = parse(this)
                 block(semver)
