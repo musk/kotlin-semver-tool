@@ -9,21 +9,19 @@ public class HandleRelease {
 
     public static final String SNAPSHOT = "SNAPSHOT";
 
-    public HandleRelease() {
-    }
-
     public static Semver release(String versionStr) {
         var version = Semver.Companion.parse(versionStr);
-        if(!version.getPrerel().endsWith(SNAPSHOT))
-            throw new IllegalArgumentException("Version "+version.toString() + " is not a SNAPSHOT version! Unable to release");
+        if (!version.getPrerel().endsWith(SNAPSHOT)) {
+            throw new IllegalArgumentException("Version " + version + " is not a SNAPSHOT version! Unable to release");
+        }
         return version.release();
     }
 
     public static Semver nextSnapshot(@NotNull String versionStr, Bump bump) {
         var version = Semver.Companion.toSemver(versionStr);
-        if(version.getPrerel().endsWith(SNAPSHOT))
+        if (version.getPrerel().endsWith(SNAPSHOT)) {
             return version;
-        else {
+        } else {
             return version.bump(bump).prerel(SNAPSHOT);
         }
     }
@@ -37,7 +35,7 @@ public class HandleRelease {
 
         try {
             HandleRelease.release("1.2.3");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
         }
     }
