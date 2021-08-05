@@ -5,7 +5,7 @@ This is a Kotlin port of [groovy-semver-tool](https://github.com/Wonno/groovy-se
 
 License [MIT](https://github.com/musk/semver-tool/blob/main/LICENSE)
 
-semver is a little tool to manipulate the version bumping in a project that follows the [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html) .
+semver is a little tool to manipulate the version bumping in a project that follows the [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) .
 
 Its use are:
 - bump version
@@ -49,7 +49,7 @@ See [Java Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-java/s
 See [Kotlin Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-kotlin/src/main/kotlin/io/github/musk/semver/demo/kotlin/HandleRelease.kt) for another demonstration of how to use the library in Kotlin.
 
 ## Links
-* [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html)
+* [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 * Inspired by [semver-tool](https://github.com/fsaintjacques/semver-tool/) written in bash.
 
 ## Credits
