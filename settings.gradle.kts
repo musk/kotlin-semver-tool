@@ -1,7 +1,7 @@
 
-rootProject.name = "kotlin-semver-tools"
+rootProject.name = "semver-tool"
 
-include(":kotlin-semver-tool")
+include(":semver-library")
 include(":semver-demo-java")
 include(":semver-demo-kotlin")
 

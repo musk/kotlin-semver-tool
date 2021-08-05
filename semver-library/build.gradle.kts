@@ -23,16 +23,16 @@ java {
 
 publishing {
     publications {
-        create<MavenPublication>("kotlin-semver-library") {
+        create<MavenPublication>("semver-library") {
             pom {
-                name.set("Kotlin Semver Library")
+                name.set("Semver Library")
                 description.set("""Toolset to handle semantic versioning according to "Semver Specification 2.0"(https://semver.org/spec/v2.0.0.html)""")
-                url.set("https://github.com/musk/kotlin-semver-tool")
+                url.set("https://github.com/musk/semver-tool")
                 packaging="jar"
                 licenses {
                     license {
                         name.set("The MIT License")
-                        url.set("https://github.com/musk/kotlin-semver-tool/blob/main/LICENSE")
+                        url.set("https://github.com/musk/semver-tool/blob/main/LICENSE")
                     }
                 }
                 developers {
@@ -44,9 +44,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/musk/kotlin-semver-tool.git")
-                    developerConnection.set("scm:git:ssh://github.com:musk/kotlin-semver-tool.git")
-                    url.set("https://github.com/musk/kotlin-semver-tool")
+                    connection.set("scm:git:git://github.com/musk/semver-tool.git")
+                    developerConnection.set("scm:git:ssh://github.com:musk/semver-tool.git")
+                    url.set("https://github.com/musk/semver-tool")
                 }
             }
             from(components["java"])
@@ -55,7 +55,7 @@ publishing {
 }
 
 signing {
-    sign(publishing.publications["kotlin-semver-library"])
+    sign(publishing.publications["semver-library"])
 }
 
 tasks.withType<Sign>().configureEach {

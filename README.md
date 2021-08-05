@@ -3,7 +3,7 @@ The semver kotlin utility
 
 This is a Kotlin port of [groovy-semver-tool](https://github.com/Wonno/groovy-semver-tool)
 
-License [MIT](https://github.com/musk/kotlin-semver-tool/blob/main/LICENSE)
+License [MIT](https://github.com/musk/semver-tool/blob/main/LICENSE)
 
 semver is a little tool to manipulate the version bumping in a project that follows the [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html) .
 
@@ -45,8 +45,8 @@ val v1 = Semver.parse("1.0.7+acf430")
 val v2 = Semver(1,0,6).patch()
 assert (v1 < v2)
 ```
-See [Java Demo](https://github.com/musk/kotlin-semver-tool/blob/main/semver-demo-java/src/main/java/io/github/musk/semver/demo/java/HandleRelease.java) for a demonstration of how to use the library in Java.  
-See [Kotlin Demo](https://github.com/musk/kotlin-semver-tool/blob/main/semver-demo-kotlin/src/main/kotlin/io/github/musk/semver/demo/kotlin/HandleRelease.kt) for another demonstration of how to use the library in Kotlin.
+See [Java Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-java/src/main/java/io/github/musk/semver/demo/java/HandleRelease.java) for a demonstration of how to use the library in Java.  
+See [Kotlin Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-kotlin/src/main/kotlin/io/github/musk/semver/demo/kotlin/HandleRelease.kt) for another demonstration of how to use the library in Kotlin.
 
 ## Links
 * [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html)

@@ -26,7 +26,7 @@ hs_err_pid*
 ### Gradle template
 .gradle
 **/build/
-!kotlin-semver-tool/src/**/build/
+!semver-library/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
