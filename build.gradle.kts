@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.musk.semver"
-version = project.property("projectVersion") ?: "0.0.0-SNAPSHOT"
+version = if (hasProperty("projectVersion")) project.property("projectVersion")!! else "0.0.0-SNAPSHOT"
 
 
 buildscript {

@@ -51,6 +51,7 @@ public class HandleRelease {
 
     /**
      * Simple main that demonstrates the usage of {@link HandleRelease}
+     * @param args the passed in command line arguments
      */
     public static void main(String[] args) {
         var releaseVersion = HandleRelease.release("1.2.3-SNAPSHOT");
