@@ -88,15 +88,15 @@ tasks.build {
 }
 
 val commitRelease by tasks.register("commitReleaseVersion") {
-    mustRunAfter(
+    dependsOn(
         prepareRelease,
     )
     doFirst {
         val releasedVersion = version.toString().toSemver().release()
-        println("Setting signRelease to 'true' and version to '$version'")
+        println("Setting signRelease to 'true' and version to '$releasedVersion'")
         val propertiesFile = file("${project.rootDir}/gradle.properties")
         writeVersionToPropertiesFile(releasedVersion, propertiesFile)
-        commit("Setting version to $releasedVersion", propertiesFile)
+        commit("[Release] Version $releasedVersion", propertiesFile)
     }
 }
 
@@ -184,9 +184,11 @@ fun writeVersionToPropertiesFile(
 
 
 fun commit(msg: String, file: File) {
-    val git = Git.open(project.rootDir)
-    println("committing '${file.absolutePath}' with message '$msg'")
-    git.add().addFilepattern(file.absolutePath).call()
+    val rootDir: File = project.rootDir
+    val git = Git.open(rootDir)
+    val filePath = rootDir.absoluteFile.toPath().relativize(file.absoluteFile.toPath())
+    println("committing '${filePath}' with message '$msg'")
+    git.add().addFilepattern(filePath.toString()).setUpdate(true).call()
     git.commit().setMessage(msg).call()
 }
 
