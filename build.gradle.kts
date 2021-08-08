@@ -15,7 +15,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("io.github.musk.semver:semver-library:1.0.0-SNAPSHOT")
         classpath("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.12.0.202106070339-r")
         classpath("org.eclipse.jgit:org.eclipse.jgit.gpg.bc:5.12.0.202106070339-r")
     }
@@ -29,4 +28,3 @@ java {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
     kotlinOptions.jvmTarget = "11"
 }
-

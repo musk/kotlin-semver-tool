@@ -104,13 +104,14 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     fun release(): Semver = bump(Bump.RELEASE)
 
     /**
-     * Bump the major version of this [Semver] setting the minor and patch version to 0 and removing any label or build
-     * information.
+     * Bump the major version of this [Semver] setting the minor and patch
+     * version to 0 and removing any label or build information.
      */
     fun major(): Semver = bump(Bump.MAJOR)
 
     /**
-     * Bump the minor version of this [Semver] setting the patch version to 0 and removing any label or build information.
+     * Bump the minor version of this [Semver] setting the patch version to 0 and
+     * removing any label or build information.
      */
     fun minor(): Semver = bump(Bump.MINOR)
 
@@ -122,7 +123,8 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     /**
      * Set the label part of this [Semver] removing any build information.
      *
-     * Throws [IllegalArgumentException] when the [String] does not designate a valid label according to [semantic version 2.0](https://semver.org)
+     * Throws [IllegalArgumentException] when the [String] does not designate
+     * a valid label according to [semantic version 2.0](https://semver.org)
      */
     fun prerel(prerel: String): Semver {
         if (Regex(PREREL_REGEX).matches(prerel)) return Semver(major, minor, patch, prerel)
@@ -132,7 +134,8 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     /**
      * Set the build part of this [Semver].
      *
-     * Throws [IllegalArgumentException] when the [String] does not designate a valid build number according to [semantic version 2.0](https://semver.org)
+     * Throws [IllegalArgumentException] when the [String] does not designate
+     * a valid build number according to [semantic version 2.0](https://semver.org)
      */
     fun build(build: String): Semver {
         if (Regex(BUILD_REGEX).matches(build)) return Semver(major, minor, patch, prerel, build)
@@ -140,8 +143,8 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     }
 
     /**
-     * Bump the specified part of this [Semver]. A bump always sets any of the following version parts to 0 and removes
-     * any label or build information.
+     * Bump the specified part of this [Semver]. A bump always sets any of the following
+     * version parts to 0 and removes any label or build information.
      */
     fun bump(bump: Bump): Semver {
         return when (bump) {
@@ -153,7 +156,8 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
     }
 
     /**
-     * Returns this [Semver] as [String]. The given [String] can be passed into [Semver.parse] to recreate this [Semver]
+     * Returns this [Semver] as [String]. The given [String] can be passed
+     * into [Semver.parse] to recreate this [Semver].
      * In other words `"1.2.3-SNAPSHOT+12" == Semver(1,2,3,"SNAPSHOT", "12").toString()` and
      * `Semver.parse("1.2.3-SNAPSHOT+12").toString() == "1.2.3-SNAPSHOT+12"`
      */
@@ -189,21 +193,14 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
      * Implements a natural ordering for [Semver] according to the rules defined by
      * [semantic versioning 2.0.0](https://semver.org)
      */
-    override operator fun compareTo(other: Semver): Int {
-        if (major != other.major)
-            return major.compareTo(other.major)
-        else if (minor != other.minor)
-            return minor.compareTo(other.minor)
-        else if (patch != other.patch)
-            return patch.compareTo(other.patch)
-        else if (prerel != other.prerel) {
-            return comparePrerel(prerel, other.prerel)
-        } else if (build.isEmpty() && other.build.isNotEmpty()) {
-            return 1
-        } else if (build.isNotEmpty() && other.build.isEmpty()) {
-            return -1
-        }
+    override operator fun compareTo(other: Semver): Int = when {
+        (major != other.major) -> major.compareTo(other.major)
+        (minor != other.minor) -> minor.compareTo(other.minor)
+        (patch != other.patch) -> patch.compareTo(other.patch)
+        (prerel != other.prerel) -> comparePrerel(prerel, other.prerel)
+        (build.isEmpty() && other.build.isNotEmpty()) -> 1
+        (build.isNotEmpty() && other.build.isEmpty()) -> -1
         // build numbers are ignored in precedence
-        return 0
+        else -> 0
     }
 }
