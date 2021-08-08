@@ -69,11 +69,10 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
          * Compares two labels according to the rules of [semantic versioning 2.0.0](https://semver.org). A label is the
          * part given after the first hyphen and before the first plus sign.
          */
-        fun comparePrerel(leftPrerel: String, rightPrerel: String): Int {
-            if (leftPrerel.isEmpty()) return 1
-            if (rightPrerel.isEmpty()) return -1
-
-            return compareIdentifiers(leftPrerel, rightPrerel)
+        fun comparePrerel(leftPrerel: String, rightPrerel: String): Int = when {
+            (leftPrerel.isEmpty()) -> 1
+            (rightPrerel.isEmpty()) -> -1
+            else -> compareIdentifiers(leftPrerel, rightPrerel)
         }
 
         /**
