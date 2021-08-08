@@ -73,22 +73,31 @@ class Semver(val major: Int, val minor: Int, val patch: Int, val prerel: String 
             if (leftPrerel.isEmpty()) return 1
             if (rightPrerel.isEmpty()) return -1
 
-            // Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined
-            // by comparing each dot separated identifier from left to right until a difference is found as follows:
+            return compareIdentifiers(leftPrerel, rightPrerel)
+        }
+
+        /**
+         * Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined
+         * by comparing each dot separated identifier from left to right until a difference is found:
+         * * identifiers consisting of only digits are compared numerically
+         * * identifiers with letters or hyphens are compared lexically in ASCII sort order.
+         * * the shorter one is considered smaller
+         */
+        private fun compareIdentifiers(leftPrerel: String, rightPrerel: String): Int {
             val lIdentifiers = leftPrerel.split('.')
             val rIdentifiers = rightPrerel.split('.')
 
             val pairs = lIdentifiers.zip(rIdentifiers)
             for ((left, right) in pairs) {
                 if (left != right) {
-                    try {
-                        // identifiers consisting of only digits are compared numerically and
+                    return try {
+                        // compare digit by digit
                         val l = left.toInt()
                         val r = right.toInt()
-                        return l.compareTo(r)
+                        l.compareTo(r)
                     } catch (ex: NumberFormatException) {
-                        // identifiers with letters or hyphens are compared lexically in ASCII sort order.
-                        return left.compareTo(right)
+                        // not a digit compare lexically
+                        left.compareTo(right)
                     }
                 }
             }

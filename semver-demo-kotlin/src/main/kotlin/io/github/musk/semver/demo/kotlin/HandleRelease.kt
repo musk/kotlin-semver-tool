@@ -16,7 +16,8 @@ object HandleRelease {
     /**
      * Release the version given by this [String] and turn it into a [Semver]
      *
-     * Throws an [IllegalArgumentException] when the [String] does not designate a semantic or is not a snapshot version.
+     * Throws an [IllegalArgumentException] when the [String] does not designate
+     * a semantic or is not a snapshot version.
      */
     fun String.release(): Semver {
         val semver = this.toSemver()
@@ -25,8 +26,9 @@ object HandleRelease {
     }
 
     /**
-     * Create a snapshot version from the given [String] by bumping its specified part and appending _-SNAPSHOT_ to it.
-     * If the version already dedicates a SNAPSHOT version it returns the version unchanged.
+     * Create a snapshot version from the given [String] by bumping its specified part
+     * and appending _-SNAPSHOT_ to it. If the version already dedicates a SNAPSHOT version
+     * it returns the version unchanged.
      *
      * Throws an [IllegalArgumentException] when the [String] does not designate a semantic version.
      */

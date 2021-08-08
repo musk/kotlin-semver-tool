@@ -40,7 +40,8 @@ publishing {
         create<MavenPublication>("semver-library") {
             pom {
                 name.set("Semver Library")
-                description.set("""Toolset to handle semantic versioning according to "Semver Specification 2.0"(https://semver.org/spec/v2.0.0.html)""")
+                description.set("""Toolset to handle semantic versioning according to 
+                    |"Semver Specification 2.0"(https://semver.org/spec/v2.0.0.html)""".trimMargin())
                 url.set("https://github.com/musk/semver-tool")
                 packaging = "jar"
                 licenses {
