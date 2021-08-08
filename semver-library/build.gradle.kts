@@ -21,7 +21,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        "classpath"("io.github.musk.semver:semver-library:1.0.0-SNAPSHOT")
+        "classpath"("io.github.musk.semver:semver-library:1.0.0")
     }
 }
 
@@ -72,69 +72,76 @@ signing {
     sign(publishing.publications["semver-library"])
 }
 
-tasks.register("release") {
-    dependsOn(
-        "build",
-        // TODO change this to publish once everything works
-        "publishToMavenLocal",
-        "signSemver-libraryPublication",
-    )
-    val versionProperty = "projectVersion"
-
-    fun writeVersionToPropertiesFile(version: Semver, gradleProperties: File) {
-        var doesNotContainVersion = true
-        val outLines = gradleProperties.readLines().map {
-            if (it.startsWith(versionProperty)) {
-                doesNotContainVersion = false
-                "$versionProperty=$version"
-            } else it
-        }.toMutableList()
-        if (doesNotContainVersion)
-            outLines += "$versionProperty=$version"
-
-        logger.debug("Saving changed properties ${gradleProperties.absolutePath}")
-        gradleProperties.writeText(outLines.joinToString("\n"))
-    }
-
-    fun createGitTag(version: Semver) {
-        val tagName = "r$version"
-        val signTag = (project.property("release.signedTag") as String).toBoolean()
-        val signingKeyId = project.property("signing.keyId").toString()
-        val signingUser = project.property("signing.user").toString()
-        val signingPwd = project.property("signing.password").toString()
-        logger.info("Creating tag {}! (signed with key: $signingKeyId)", tagName)
-        Git.open(project.rootDir).tag()
-            .setName(tagName)
-            .setAnnotated(true)
-            .setMessage("[Release] Version: $version").run {
-                if (signTag) {
-                    val provider = UsernamePasswordCredentialsProvider(signingUser, signingPwd)
-                    this.setSigningKey(signingKeyId)
-                        .setSigned(true)
-                        .setCredentialsProvider(provider)
-                } else this
-            }.call()
-    }
-
-    project.extra["release.sign"] = true
-    val releasedVersion = version.toString().toSemver().release()
-    version = releasedVersion
-    logger.debug("Setting signRelease to 'true' and version to '$version'")
+val prepareRelease by tasks.register("prepareRelease") {
     doFirst {
-        logger.info("Releasing $version")
-        createGitTag(releasedVersion)
+        val releasedVersion = version.toString().toSemver().release()
+        version = releasedVersion
+        println("setting release version '$releasedVersion'")
     }
+}
+
+tasks.build {
+    mustRunAfter(prepareRelease)
+    doFirst {
+        println("building")
+    }
+}
+
+val commitRelease by tasks.register("commitReleaseVersion") {
+    mustRunAfter(
+        prepareRelease,
+    )
+    doFirst {
+        val releasedVersion = version.toString().toSemver().release()
+        println("Setting signRelease to 'true' and version to '$version'")
+        val propertiesFile = file("${project.rootDir}/gradle.properties")
+        writeVersionToPropertiesFile(releasedVersion, propertiesFile)
+        commit("Setting version to $releasedVersion", propertiesFile)
+    }
+}
+
+val createTag by tasks.register("createTag") {
+    mustRunAfter(commitRelease)
     doLast {
-        extra["release.sign"] = false
+        val semver = version.toString().toSemver()
+        println("Creating tag for '$semver'")
+        createGitTag(semver)
+    }
+}
+
+val commitSnapshot by tasks.register("commitNextSnapshot") {
+    mustRunAfter(
+        commitRelease,
+        tasks.publish,
+        "signSemver-libraryPublication",
+        createTag,
+    )
+    doLast {
         val nextSnapshot = version.toString().toSemver().minor().prerel("SNAPSHOT")
         version = nextSnapshot
-        logger.info("Setting next snapshot version to '$version'")
-        writeVersionToPropertiesFile(nextSnapshot, file("${project.rootDir}/gradle.properties"))
+        println("Setting next snapshot version to '$version'")
+        val propertiesFile = file("${project.rootDir}/gradle.properties")
+        writeVersionToPropertiesFile(nextSnapshot, propertiesFile)
+        commit("Setting version to $nextSnapshot", propertiesFile)
+    }
+}
+
+tasks.register("release") {
+    dependsOn(
+        commitRelease,
+        tasks.build,
+        tasks.publish,
+        "signSemver-libraryPublication",
+        createTag,
+        commitSnapshot,
+    )
+    doFirst {
+        println("Releasing ${project.group}:${project.name}:${project.version}")
     }
 }
 
 tasks.withType<Sign>().configureEach {
-    onlyIf { project.extra["release.sign"] as Boolean }
+    onlyIf { project.property("release.sign").toString().toBoolean() }
 }
 
 tasks.test {
@@ -156,3 +163,53 @@ tasks.jar {
     }
 }
 
+fun writeVersionToPropertiesFile(
+    version: Semver,
+    gradleProperties: File,
+    versionProperty: String = "projectVersion",
+) {
+    var doesNotContainVersion = true
+    val outLines = gradleProperties.readLines().map {
+        if (it.startsWith(versionProperty)) {
+            doesNotContainVersion = false
+            "$versionProperty=$version"
+        } else it
+    }.toMutableList()
+    if (doesNotContainVersion)
+        outLines += "$versionProperty=$version"
+
+    println("Saving changed properties ${gradleProperties.absolutePath}")
+    gradleProperties.writeText(outLines.joinToString("\n"))
+}
+
+
+fun commit(msg: String, file: File) {
+    val git = Git.open(project.rootDir)
+    println("committing '${file.absolutePath}' with message '$msg'")
+    git.add().addFilepattern(file.absolutePath).call()
+    git.commit().setMessage(msg).call()
+}
+
+fun createGitTag(version: Semver) {
+    val tagName = "r$version"
+    val signTag = project.property("release.signedTag").toString().toBoolean()
+    val signingKeyId = project.property("signing.keyId").toString()
+    val signingUser = project.property("signing.user").toString()
+    val signingPwd = project.property("signing.password").toString()
+    val message = when (signTag) {
+        true -> "Creating signed tag '$tagName'! (keyId=$signingKeyId)"
+        false -> "Creating tag '$tagName'!"
+    }
+    println(message)
+    Git.open(project.rootDir).tag()
+        .setName(tagName)
+        .setAnnotated(true)
+        .setMessage(message).run {
+            if (signTag) {
+                val provider = UsernamePasswordCredentialsProvider(signingUser, signingPwd)
+                this.setSigningKey(signingKeyId)
+                    .setSigned(true)
+                    .setCredentialsProvider(provider)
+            } else this
+        }.call()
+}
