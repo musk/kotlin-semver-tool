@@ -19,9 +19,10 @@ project.extra["release.sign"] = (project.property("release.sign") as String?)?.t
 buildscript {
     repositories {
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
-        "classpath"("io.github.musk.semver:semver-library:1.0.0")
+        "classpath"("io.github.musk.semver:semver-library:1.1.0")
     }
 }
 
@@ -31,9 +32,14 @@ dependencies {
 }
 
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+
     withSourcesJar()
     withJavadocJar()
 }
+
 
 publishing {
     publications {
@@ -71,6 +77,29 @@ publishing {
 
 signing {
     sign(publishing.publications["semver-library"])
+}
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { project.property("release.sign").toString().toBoolean() }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.withType<KotlinCompile>() {
+    kotlinOptions.jvmTarget = "11"
+}
+
+tasks.jar {
+    manifest {
+        attributes(mapOf(
+            "Implementation-Title" to project.name,
+            "Implementation-Version" to project.version,
+            "Built-By" to System.getProperty("user.name"),
+            "Multi-Release" to true,
+        ))
+    }
 }
 
 val prepareRelease by tasks.register("prepareRelease") {
@@ -141,28 +170,6 @@ tasks.register("release") {
     }
 }
 
-tasks.withType<Sign>().configureEach {
-    onlyIf { project.property("release.sign").toString().toBoolean() }
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "11"
-}
-
-tasks.jar {
-    manifest {
-        attributes(mapOf(
-            "Implementation-Title" to project.name,
-            "Implementation-Version" to project.version,
-            "Built-By" to System.getProperty("user.name"),
-            "Multi-Release" to true,
-        ))
-    }
-}
 
 fun writeVersionToPropertiesFile(
     version: Semver,

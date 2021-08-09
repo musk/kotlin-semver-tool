@@ -1,7 +1,7 @@
-The semver kotlin utility
+The "semver-library"
 =========================
 
-This is a Kotlin port of [groovy-semver-tool](https://github.com/Wonno/groovy-semver-tool)
+This port of [groovy-semver-tool](https://github.com/Wonno/groovy-semver-tool) written in Kotlin
 
 License [MIT](https://github.com/musk/semver-tool/blob/main/LICENSE)
 
@@ -23,9 +23,29 @@ The version must match `X.Y.Z[-PRERELEASE][+BUILD]` where `X`, `Y` and `Z` are n
 `-PRERELEASE` is a dot separated sequence of non-negative integers and/or identifiers composed of alphanumeric characters and hyphens (with at least one non-digit). Numeric identifiers must not have leading zeros. A hyphen (\"-\") introduces this optional part.
 `-BUILD` is a dot separated sequence of identifiers composed of alphanumeric characters and hyphens. A plus ("+") introduces this optional part.
 
+## Add Dependency
+### Maven
+```xml
+<dependency>
+    <groupId>io.github.musk.semver</groupId>
+    <artifactId>semver-library</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+### Gradle
+#### Groovy DSL
+```gradle
+implementation 'io.github.musk.semver:semver-library:1.1.0'
+implementation group: 'io.github.github.musk.semver', name: 'semver-library', version: '1.1.0'
+```
+#### Kotlin DSL
+```kotlin
+implementation("io.github.musk.semver:semver-library:1.1.0")
+implementation(group="io.github.musk.semver", name="semver-library", version="1.1.0")
+```
 ## Build
 ```
-gradlew assemble
+gradlew build publish
 ```
 
 ## Examples
@@ -47,6 +67,7 @@ assert (v1 < v2)
 ```
 See [Java Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-java/src/main/java/io/github/musk/semver/demo/java/HandleRelease.java) for a demonstration of how to use the library in Java.  
 See [Kotlin Demo](https://github.com/musk/semver-tool/blob/main/semver-demo-kotlin/src/main/kotlin/io/github/musk/semver/demo/kotlin/HandleRelease.kt) for another demonstration of how to use the library in Kotlin.
+Also have a look at the 'release' task in this gradle build files for a practical usage scenario
 
 ## Links
 * [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
