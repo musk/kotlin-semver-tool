@@ -22,7 +22,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        "classpath"("io.github.musk.semver:semver-library:1.1.0")
+        "classpath"("io.github.musk.semver:semver-library:1.1.0-SNAPSHOT")
     }
 }
 
@@ -187,7 +187,7 @@ fun writeVersionToPropertiesFile(
         outLines += "$versionProperty=$version"
 
     println("Saving changed properties ${gradleProperties.absolutePath}")
-    gradleProperties.writeText(outLines.joinToString("\n"))
+    gradleProperties.writeText(outLines.joinToString(separator="\n", postfix="\n"))
 }
 
 
