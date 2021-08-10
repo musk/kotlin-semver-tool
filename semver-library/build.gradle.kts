@@ -102,6 +102,19 @@ tasks.jar {
     }
 }
 
+tasks.named("publishSemver-libraryPublicationToSonatypeRepository") {
+    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+}
+
+tasks.named("publishAllPublicationsToSonatypeRepository") {
+    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+}
+
+tasks.named("publishToSonatype") {
+    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+}
+
+
 val prepareRelease by tasks.register("prepareRelease") {
     doFirst {
         val releasedVersion = version.toString().toSemver().release()
@@ -165,9 +178,6 @@ tasks.register("release") {
         createTag,
         commitSnapshot,
     )
-    doFirst {
-        println("Releasing ${project.group}:${project.name}:${project.version}")
-    }
 }
 
 
