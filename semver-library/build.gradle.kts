@@ -103,15 +103,15 @@ tasks.jar {
 }
 
 tasks.named("publishSemver-libraryPublicationToSonatypeRepository") {
-    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+    onlyIf { project.property("release.stageSonatype").toString().toBoolean() }
 }
 
 tasks.named("publishAllPublicationsToSonatypeRepository") {
-    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+    onlyIf { project.property("release.stageSonatype").toString().toBoolean() }
 }
 
 tasks.named("publishToSonatype") {
-    onlyIf { project.property("release.stageSonatype" ).toString().toBoolean() }
+    onlyIf { project.property("release.stageSonatype").toString().toBoolean() }
 }
 
 
@@ -144,7 +144,9 @@ val commitRelease by tasks.register("commitReleaseVersion") {
 }
 
 val createTag by tasks.register("createTag") {
-    mustRunAfter(commitRelease)
+    mustRunAfter(
+        commitRelease,
+    )
     doLast {
         val semver = version.toString().toSemver()
         println("Creating tag for '$semver'")
@@ -197,7 +199,7 @@ fun writeVersionToPropertiesFile(
         outLines += "$versionProperty=$version"
 
     println("Saving changed properties ${gradleProperties.absolutePath}")
-    gradleProperties.writeText(outLines.joinToString(separator="\n", postfix="\n"))
+    gradleProperties.writeText(outLines.joinToString(separator = "\n", postfix = "\n"))
 }
 
 

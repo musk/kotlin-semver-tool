@@ -1,0 +1,80 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+'Shows the release sequence performed by GRADLE
+actor Deployer #AAAAEF
+participant GRADLE #AAEFAA
+control RELEASE
+control "PREPARE-RELEASE" as PREPARE
+control BUILD
+control SIGN
+control PUBLISH
+control "PUBLISH-LOCAL" as LOCAL
+control "PUBLISH-SONATYPE" as SONATYPE
+control "CREATE-TAG" as TAG
+control "COMMIT-RELEASE" as COMMIT
+control "COMMIT-SNAPSHOT" as SNAPSHOT
+participant PROJECT #AAEFAA
+participant PROPERTIES #AAEFAA
+queue GIT #EFAAAA
+autonumber
+
+title ./gradlew release
+PROJECT++
+note across: project.version = 1.0.0-SNAPSHOT
+Deployer -> GRADLE: Trigger gradlew **release**
+GRADLE -> RELEASE++: release task
+
+RELEASE -> PREPARE++: run **prepareRelease** task
+PREPARE -> PROJECT: set version to 1.0.0
+note across: project.version = 1.0.0
+PREPARE <- PROJECT
+RELEASE <- PREPARE--
+
+RELEASE -> BUILD++: run **build** task\nincludes tests
+note across: jars created
+RELEASE <- BUILD--
+
+RELEASE -> SIGN++: run **sign** task
+note across: signature files for jars created
+RELEASE <- SIGN--
+
+note across
+Project is in a healthy state
+* All tests have run successfully
+* Jars have been properly build
+* Signatures were successfully created
+end note
+
+RELEASE -> COMMIT++: run **commitRelease** task
+COMMIT -> PROPERTIES++: write projectVersion to properties
+COMMIT <- PROPERTIES--
+COMMIT -> GIT++: commit properties
+COMMIT <- GIT--
+RELEASE <- COMMIT--
+
+RELEASE -> TAG++: run **createTag** task
+TAG -> GIT++: create [gpg signed] tag\n
+TAG <- GIT--
+RELEASE <- TAG--
+
+RELEASE -> PUBLISH++: run **publish** task
+note across: pom.xml created
+RELEASE <- PUBLISH--
+
+RELEASE -> SONATYPE++: run **publishSemver-LibraryToSonatype**
+note across: artifacts staged to sonatype repo\nready for sync with Maven Central
+RELEASE <- SONATYPE--
+
+RELEASE -> SNAPSHOT++: run **commitSnapshot** task
+SNAPSHOT -> PROJECT: set version to 1.1.0-SNAPSHOT
+note across: project.version = 1.1.0-SNAPSHOT
+SNAPSHOT <- PROJECT
+SNAPSHOT -> PROPERTIES++: write projectVersion to properties
+PROPERTIES -> PROPERTIES: write file to disk
+SNAPSHOT <- PROPERTIES--
+SNAPSHOT -> GIT++: commit properties
+SNAPSHOT <- GIT--
+RELEASE <- SNAPSHOT--
+
+GRADLE <- RELEASE--
+@enduml
