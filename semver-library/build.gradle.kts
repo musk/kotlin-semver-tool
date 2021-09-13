@@ -1,3 +1,4 @@
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import io.github.musk.semver.Semver
 import io.github.musk.semver.Semver.Companion.toSemver
 import org.eclipse.jgit.api.Git
@@ -178,7 +179,12 @@ tasks.register("release") {
         tasks.build,
         "signSemver-libraryPublication",
         createTag,
+        tasks.publish,
+        commitSnapshot,
     )
+    project.rootProject.extensions.configure<NexusPublishExtension> {
+        useStaging.set(true)
+    }
 }
 
 
