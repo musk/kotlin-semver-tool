@@ -13,6 +13,9 @@ import io.github.musk.semver.Semver;
  */
 public class HandleRelease {
 
+    /**
+     * SNAPSHOT identifier
+     */
     public static final String SNAPSHOT = "SNAPSHOT";
 
     /**
