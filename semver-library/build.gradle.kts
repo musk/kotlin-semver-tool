@@ -76,7 +76,7 @@ publishing {
 }
 
 signing {
-    sign(publishing.publications["semver-library"])
+    sign(publishing.publications)
 }
 
 
@@ -176,10 +176,8 @@ tasks.register("release") {
     dependsOn(
         commitRelease,
         tasks.build,
-        tasks.publish,
         "signSemver-libraryPublication",
         createTag,
-        commitSnapshot,
     )
 }
 
