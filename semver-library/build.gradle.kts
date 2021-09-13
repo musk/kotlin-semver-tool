@@ -216,9 +216,11 @@ fun commit(msg: String, file: File) {
 fun createGitTag(version: Semver) {
     val tagName = "r$version"
     val signTag = project.property("release.signedTag").toString().toBoolean()
-    val signingKeyId = project.property("signedTag.keyId").toString()
-    val signingUser = project.property("signedTag.user").toString()
-    val signingPwd = project.property("signedTag.password").toString()
+    val signingKeyId =
+        project.findProperty("signedTag.keyId")?.toString() ?: project.property("signing.keyId").toString()
+    val signingUser = project.findProperty("signedTag.user")?.toString() ?: project.property("signing.user").toString()
+    val signingPwd =
+        project.findProperty("signedTag.password")?.toString() ?: project.property("signing.password").toString()
     val message = when (signTag) {
         true -> "Creating signed tag '$tagName'! (keyId=$signingKeyId)"
         false -> "Creating tag '$tagName'!"
