@@ -22,7 +22,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        "classpath"("io.github.musk.semver:semver-library:1.1.0-SNAPSHOT")
+        "classpath"("io.github.musk.semver:semver-library:1.2.0")
     }
 }
 
