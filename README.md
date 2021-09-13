@@ -44,8 +44,13 @@ implementation("io.github.musk.semver:semver-library:1.1.0")
 implementation(group="io.github.musk.semver", name="semver-library", version="1.1.0")
 ```
 ## Build
-```
+```shell
 gradlew build publish
+```
+
+## Release
+```shell
+gradlew build sign release publish -Prelease.signedTag=true -Prelease.sign=true -Psigning.secretKeyRingFile=<keyfile> -Psigning.keyId=2EDAFCEF -Psigning.user=mailtolanger@gmail.com -Psigning.password=<pwd> -Possrh.user=mailtolanger@gmail.com -Possrh.password=<pwd>
 ```
 
 ## Examples

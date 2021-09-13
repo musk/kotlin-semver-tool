@@ -79,6 +79,15 @@ signing {
     sign(publishing.publications["semver-library"])
 }
 
+
+val prepareRelease by tasks.register("prepareRelease") {
+    doFirst {
+        val releasedVersion = version.toString().toSemver().release()
+        version = releasedVersion
+        println("setting release version '$releasedVersion'")
+    }
+}
+
 tasks.withType<Sign>().configureEach {
     onlyIf { project.property("release.sign").toString().toBoolean() }
 }
@@ -88,6 +97,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile>() {
+    mustRunAfter(prepareRelease)
     kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -112,15 +122,6 @@ tasks.named("publishAllPublicationsToSonatypeRepository") {
 
 tasks.named("publishToSonatype") {
     onlyIf { project.property("release.stageSonatype").toString().toBoolean() }
-}
-
-
-val prepareRelease by tasks.register("prepareRelease") {
-    doFirst {
-        val releasedVersion = version.toString().toSemver().release()
-        version = releasedVersion
-        println("setting release version '$releasedVersion'")
-    }
 }
 
 tasks.build {
@@ -215,9 +216,9 @@ fun commit(msg: String, file: File) {
 fun createGitTag(version: Semver) {
     val tagName = "r$version"
     val signTag = project.property("release.signedTag").toString().toBoolean()
-    val signingKeyId = project.property("signing.keyId").toString()
-    val signingUser = project.property("signing.user").toString()
-    val signingPwd = project.property("signing.password").toString()
+    val signingKeyId = project.property("signedTag.keyId").toString()
+    val signingUser = project.property("signedTag.user").toString()
+    val signingPwd = project.property("signedTag.password").toString()
     val message = when (signTag) {
         true -> "Creating signed tag '$tagName'! (keyId=$signingKeyId)"
         false -> "Creating tag '$tagName'!"
@@ -229,8 +230,8 @@ fun createGitTag(version: Semver) {
         .setMessage(message).run {
             if (signTag) {
                 val provider = UsernamePasswordCredentialsProvider(signingUser, signingPwd)
-                this.setSigningKey(signingKeyId)
-                    .setSigned(true)
+                this.setSigned(true)
+                    .setSigningKey(signingKeyId)
                     .setCredentialsProvider(provider)
             } else this
         }.call()
