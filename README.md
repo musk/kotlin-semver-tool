@@ -29,19 +29,19 @@ The version must match `X.Y.Z[-PRERELEASE][+BUILD]` where `X`, `Y` and `Z` are n
 <dependency>
     <groupId>io.github.musk.semver</groupId>
     <artifactId>semver-library</artifactId>
-    <version>1.1.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 ### Gradle
 #### Groovy DSL
 ```gradle
-implementation 'io.github.musk.semver:semver-library:1.1.0'
-implementation group: 'io.github.github.musk.semver', name: 'semver-library', version: '1.1.0'
+implementation 'io.github.musk.semver:semver-library:1.3.0'
+implementation group: 'io.github.github.musk.semver', name: 'semver-library', version: '1.3.0'
 ```
 #### Kotlin DSL
 ```kotlin
-implementation("io.github.musk.semver:semver-library:1.1.0")
-implementation(group="io.github.musk.semver", name="semver-library", version="1.1.0")
+implementation("io.github.musk.semver:semver-library:1.3.0")
+implementation(group="io.github.musk.semver", name="semver-library", version="1.3.0")
 ```
 ## Build
 ```shell
